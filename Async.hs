@@ -18,7 +18,12 @@ import Data.IORef.MonadIO
 import Data.Map.Strict (member, empty, insert, Map)
 import qualified Data.Map.Strict as Map
 
-
+deleteAt :: Int -> [a] -> [a]
+deleteAt index [] = []
+deleteAt index (x:xs)
+  | index < 0 = (x:xs)
+  | index == 0 = xs
+  | index > 0 = x:deleteAt (index - 1) xs
 
 {-- Program abstractions for asynchronous functionalities --}
 {--
@@ -92,7 +97,7 @@ runAsyncF f (p2f, f2p) (a2f, f2a) (z2f, f2z) = do
       Left (ClockA2F_Deliver idx) -> do
         rq <- readIORef runqueue
         let callback = rq !! idx
-        let rq' = deleteAtIndex idx rq
+        let rq' = deleteAt idx rq
         writeIORef runqueue rq'
         callback
       Right msg -> do
