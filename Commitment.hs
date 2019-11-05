@@ -1,7 +1,9 @@
  {-# LANGUAGE ImplicitParams, ScopedTypeVariables, RankNTypes,
               PartialTypeSignatures,
       FlexibleInstances, FlexibleContexts, UndecidableInstances
-  #-} 
+  #-}
+
+module Commitment where
 
 import Control.Concurrent.MonadIO
 import Data.IORef.MonadIO
