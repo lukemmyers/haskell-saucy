@@ -48,7 +48,7 @@ fCom_ dbg (p2f, f2p) (a2f, f2a) (z2f, f2z) = do
     case () of _ | pid == pidS -> writeChan s2f m
 
   -- Receive a value from the sender
-  ComP2F_Commit x <- readChan s2f
+  ~(ComP2F_Commit x) <- readChan s2f
   -- Debug option:
   case dbg of
     Just d -> writeChan d x
@@ -56,7 +56,7 @@ fCom_ dbg (p2f, f2p) (a2f, f2a) (z2f, f2z) = do
       writeChan f2p (pidR, ComF2P_Commit)
 
       -- Receive the opening instruction from the sender
-      ComP2F_Open <- readChan s2f
+      ~(ComP2F_Open) <- readChan s2f
       writeChan f2p (pidR, ComF2P_Open x)
 
 

@@ -174,7 +174,7 @@ runRandReplay :: (MonadIO m, ?getBit :: m Bool) =>
 runRandReplay bits p = do
   ref <- newIORef bits
   let ?getBit = do
-        (bit : rest) <- readIORef ref
+        ~(bit : rest) <- readIORef ref
         writeIORef ref rest
         return bit
     in p
