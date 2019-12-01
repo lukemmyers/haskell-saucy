@@ -18,20 +18,6 @@ packages:
       sha256: 8ef9688d399f931a040d5d316ef8d40efacc14fcb099eba637adb7d00e75ecde
   original:
     hackage: stm-2.5.0.0
-- completed:
-    hackage: safe-0.3.17@sha256:a522024ec60a9bef6ad1df2117023785b0f97ed732d9af9908cd1d09530e977f,2317
-    pantry-tree:
-      size: 564
-      sha256: 41a335211378f52bb5c0e02bf60ccd4e65768f9277e0bdc831731256f4460fea
-  original:
-    hackage: safe-0.3.17
-- completed:
-    hackage: monad-loops-0.4.3@sha256:ada4f1295ece07f9a7398bc5b40c4532f95a733a8604d2a2f57f05f878766df2,1751
-    pantry-tree:
-      size: 243
-      sha256: c8d919cbf7cda1c8551534cb17844c56cbfcbf1b18667b1a0700b97c87ff5059
-  original:
-    hackage: monad-loops-0.4.3
 snapshots:
 - completed:
     size: 525876
