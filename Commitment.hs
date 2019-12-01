@@ -208,7 +208,7 @@ envComZ2 option s p z2exec (p2z, z2p) (a2z, z2a) (f2z, z2f) pump outp = do
     -- liftIO $ putStrLn $ "Z2: running real Z1!"
     fork $ do
          -- Marker 2
-         ComF2P_Commit <- execUC (envComZ1 alice2bob bob2alice) (p) (fTwoWay) dummyAdversary
+         ~ComF2P_Commit <- execUC (envComZ1 alice2bob bob2alice) (p) (fTwoWay) dummyAdversary
          writeChan outp (b, b)
 
   -- Have Alice commit to a bit
@@ -278,14 +278,14 @@ protBindingNotHiding (z2p, p2z) (f2p, p2f) = do
   let (pidS :: PID, pidR :: PID, ssid :: SID) = read $ snd sid
   case () of 
     _ | ?pid == pidS -> do
-          ComP2F_Commit b <- readChan z2p
+          ~(ComP2F_Commit b) <- readChan z2p
           writeChan p2f $ BNH_Commit b
-          ComP2F_Open <- readChan z2p
+          ~ComP2F_Open <- readChan z2p
           writeChan p2f $ BNH_Open
     _ | ?pid == pidR -> do
-          BNH_Commit b <- readChan f2p
+          ~(BNH_Commit b) <- readChan f2p
           writeChan p2z ComF2P_Commit
-          BNH_Open <- readChan f2p
+          ~BNH_Open <- readChan f2p
           writeChan p2z $ ComF2P_Open b
   return ()
 
@@ -314,12 +314,12 @@ simBindingNotHiding (z2a, a2z) (p2a, a2p) (f2a, a2f) = do
   if member pidS ?crupt then do
       fork $ do
         -- Handle committing
-        (BNH_Commit b) <- readChan a2s
+        ~(BNH_Commit b) <- readChan a2s
         liftIO $ putStrLn $ "simCom: writing p2f_Commit"
         writeChan a2p (pidS, ComP2F_Commit b)
 
         -- Handle opening
-        (BNH_Open) <- readChan a2s
+        ~(BNH_Open) <- readChan a2s
         writeChan a2p (pidS, ComP2F_Open)
       return ()
   else return ()
@@ -327,12 +327,12 @@ simBindingNotHiding (z2a, a2z) (p2a, a2p) (f2a, a2f) = do
   if member pidR ?crupt then do
       fork $ do
         -- Handle delivery of commitment
-        ComF2P_Commit <- readChan f2r 
+        ~ComF2P_Commit <- readChan f2r
         liftIO $ putStrLn $ "simCom: received Commit"
         -- Poor simulation (it's always 0)
         writeChan a2z $ SttCruptA2Z_P2A (pidR, BNH_Commit False)
         -- Handle delivery of opening
-        ComF2P_Open b' <- readChan f2r
+        ~(ComF2P_Open b') <- readChan f2r
         writeChan a2z $ SttCruptA2Z_P2A (pidR, BNH_Open)
       return ()
   else return ()
@@ -345,14 +345,14 @@ protHiding (z2p, p2z) (f2p, p2f) = do
   let (pidS :: PID, pidR :: PID, ssid :: SID) = read $ snd ?sid
   case () of 
     _ | ?pid == pidS -> do
-            ComP2F_Commit b <- readChan z2p
+            ~(ComP2F_Commit b) <- readChan z2p
             writeChan p2f $ Hiding_Commit
-            ComP2F_Open <- readChan z2p
+            ~ComP2F_Open <- readChan z2p
             writeChan p2f $ Hiding_Open b
     _ | ?pid == pidR -> do
-            Hiding_Commit <- readChan f2p
+            ~Hiding_Commit <- readChan f2p
             writeChan p2z ComF2P_Commit
-            Hiding_Open b <- readChan f2p
+            ~(Hiding_Open b) <- readChan f2p
             writeChan p2z $ ComF2P_Open b          
   return ()
 
@@ -379,26 +379,26 @@ simHiding (z2a, a2z) (p2a, a2p) (f2a, a2f) = do
   if member pidS ?crupt then do
       fork $ do
         -- Handle committing
-        Hiding_Commit <- readChan a2s
+        ~Hiding_Commit <- readChan a2s
         -- Can't simulate very well - generate a random bit
         b <- getBit
         liftIO $ putStrLn $ "sim: writing p2f_Commit"
         writeChan a2p (pidS, ComP2F_Commit b)
 
         -- Handle opening
-        (Hiding_Open b') <- readChan a2s
+        ~(Hiding_Open b') <- readChan a2s
         writeChan a2p (pidS, ComP2F_Open)
       return ()
   else return ()
   if member pidR ?crupt then do
       fork $ do
         -- Handle delivery of commitment
-        ComF2P_Commit <- readChan f2r 
+        ~ComF2P_Commit <- readChan f2r
         liftIO $ putStrLn $ "simCom: received Commit"
         -- Easy to simulate
         writeChan a2z $ SttCruptA2Z_P2A (pidR, Hiding_Commit)
         -- Handle delivery of opening
-        ComF2P_Open b <- readChan f2r
+        ~(ComF2P_Open b) <- readChan f2r
         writeChan a2z $ SttCruptA2Z_P2A (pidR, Hiding_Open b)
       return ()
   else return ()
@@ -438,25 +438,25 @@ protComm (z2p, p2z) (f2p, p2f) = do
   case () of 
     _ | ?pid == pidS -> do
           -- Wait for commit instruction
-          ComP2F_Commit b <- readChan z2p
+          ~(ComP2F_Commit b) <- readChan z2p
           -- Generate the blinding
-          nonce :: Int <- getNbits 120
+          ~(nonce :: Int) <- getNbits 120
           -- Query the random oracle
           writeChan p2f $ RoP2F_Ro (nonce, b)
-          RoF2P_Ro h <- readChan f2p
+          ~(RoF2P_Ro h) <- readChan f2p
           writeChan p2f $ RoP2F_m (ProtComm_Commit h)
 
           -- Wait for open instruction
-          ComP2F_Open <- readChan z2p
+          ~ComP2F_Open <- readChan z2p
           writeChan p2f $ RoP2F_m (ProtComm_Open nonce b)
 
     _ | ?pid == pidR -> do
-          RoF2P_m (ProtComm_Commit h) <- readChan f2p
+          ~(RoF2P_m (ProtComm_Commit h)) <- readChan f2p
           writeChan p2z ComF2P_Commit
-          RoF2P_m (ProtComm_Open nonce b) <- readChan f2p
+          ~(RoF2P_m (ProtComm_Open nonce b)) <- readChan f2p
           -- Query the RO 
           writeChan p2f $ RoP2F_Ro (nonce, b)
-          RoF2P_Ro h' <- readChan f2p
+          ~(RoF2P_Ro h') <- readChan f2p
           if not (h' == h) then fail "hash mismatch" else return ()
 
           -- Output

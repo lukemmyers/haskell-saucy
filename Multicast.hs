@@ -116,7 +116,7 @@ simMulticast (z2a, a2z) (p2a, a2p) (f2a, a2f) = do
         -- If the "ideal" leak buffer contains "Multicast m",
         -- then the "real" leak buffer should contain [(pid, (sid, m)] for every party
         writeChan a2f (Left ClockA2F_GetLeaks)
-        (Left (ClockF2A_Leaks buf)) <- readChan f2a
+        ~(Left (ClockF2A_Leaks buf)) <- readChan f2a
         let extendRight conf = show ("", conf)
         let resp = case buf of
               []       ->  []

@@ -211,7 +211,7 @@ testEnvACastIdeal z2exec (p2z, z2p) (a2z, z2a) (f2z, z2f) pump outp = do
   -- Empty the queue
   let checkQueue = do
         writeChan z2a $ SttCruptZ2A_A2F (Left ClockA2F_GetCount)
-        SttCruptA2Z_F2A (Left (ClockF2A_Count c)) <- readChan a2z
+        ~(SttCruptA2Z_F2A (Left (ClockF2A_Count c))) <- readChan a2z
         liftIO $ putStrLn $ "Z[testEnvACastIdeal]: Events remaining: " ++ show c
         return (c > 0)
 
@@ -249,7 +249,7 @@ testEnvACast z2exec (p2z, z2p) (a2z, z2a) (f2z, z2f) pump outp = do
   -- Empty the queue
   let checkQueue = do
         writeChan z2a $ SttCruptZ2A_A2F (Left ClockA2F_GetCount)
-        SttCruptA2Z_F2A (Left (ClockF2A_Count c)) <- readChan a2z
+        ~(SttCruptA2Z_F2A (Left (ClockF2A_Count c))) <- readChan a2z
         liftIO $ putStrLn $ "Z[testEnvACastIdeal]: Events remaining: " ++ show c
         return (c > 0)
 
